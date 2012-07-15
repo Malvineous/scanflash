@@ -1,0 +1,31 @@
+scanflash: Utility for testing flash memory devices
+Copyright 2012 Adam Nielsen <malvineous@shikadi.net>
+http://www.shikadi.net/scanflash/
+
+This program writes and then verifies data on every block of a device, to
+ensure that the data written is exactly what is read back.
+
+It is designed to help test for fake memory cards and USB flash drives, which
+often report their size to be much larger than it is in reality.  Usually the
+start and end of these devices will hold data, so that simple tests like
+copying files will appear to succeed, even though the data is silently being
+lost.  This is because the area in the middle of the devices will either lose
+data written to it, or it will overwrite data elsewhere on the device (which
+makes detection harder, as you will always be able to read the data you just
+wrote.)
+
+scanflash works by writing unique codes across the entire device, and only once
+the whole device has been filled does it attempt to read the data back again.
+This allows it to detect the following types of problems:
+
+ * Black holes, where data written just disappears.
+
+ * Overlaps, where data written actually overwrites data elsewhere.
+
+ * Corruption, where data can't be read or written properly.
+
+Rather than just identifying bad devices, scanflash will try to figure out
+which parts of the storage device are unusable.  It will then create a special
+partition around the bad data, preventing it from being used.  Partitions are
+created to provide access to the rest of the space, so that the card can still
+be used, albeit with a smaller capacity than what it says on its label.
