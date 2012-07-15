@@ -43,6 +43,7 @@
 /// Partition type for unusable space
 #define MBR_PTYPE_BAD 0xFF // Xenix bad block table
 
+/// Write a 32-bit little-endian value to a buffer, regardless of host endianness
 void store32le(uint8_t *dest, uint32_t val)
 {
 	dest[0] = val & 0xFF;
@@ -52,6 +53,7 @@ void store32le(uint8_t *dest, uint32_t val)
 	return;
 }
 
+/// Convert an LBA value into CHS
 void lba2chs(block_t lba, uint8_t *chs)
 {
 	unsigned int cyls = lba / (CHS_NUMSECTORS * CHS_NUMHEADS);

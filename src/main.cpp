@@ -47,6 +47,7 @@ enum ReturnCodes {
 	RET_DEVICE_FAILED = 8, ///< Test completed successfully, flash drive bad
 };
 
+/// Error class to automatically decode POSIX error codes
 class POSIXError: virtual public error
 {
 	public:
@@ -57,6 +58,7 @@ class POSIXError: virtual public error
 		}
 };
 
+/// POSIX implementation of a Device
 class POSIXDevice: virtual public Device
 {
 	public:
@@ -143,6 +145,7 @@ class POSIXDevice: virtual public Device
 		std::string devPath;
 };
 
+/// Text console UI
 class ConsoleUI: virtual public CheckCallback
 {
 	public:
