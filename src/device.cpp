@@ -34,6 +34,9 @@
 /// Number of heads for LBA conversion
 #define CHS_NUMHEADS 16
 
+/// LBA sector where first partition starts, if space there is good
+#define MBR_FIRST_PART_START 63
+
 /// Minimum size of a partition (smaller space is ignored)
 #define MBR_MIN_PART_SIZE (16/*megabytes*/ * 1048576 / MBR_SECTOR_SIZE)
 
@@ -66,6 +69,19 @@ void lba2chs(block_t lba, uint8_t *chs)
 }
 
 /// Write an entry in the partition table
+/**
+ * @param mbr
+ *   MBR data in memory to update.
+ *
+ * @param index
+ *   Partition entry to update, 0-3.
+ *
+ * @param start
+ *   LBA sector number of first sector to include in partition.
+ *
+ * @param end
+ *   LBA sector number of last sector to include in partition.
+ */
 void writeEntry(uint8_t *mbr, unsigned int index, block_t start, block_t end,
 	uint8_t type)
 {
@@ -77,7 +93,7 @@ void writeEntry(uint8_t *mbr, unsigned int index, block_t start, block_t end,
 	part[0x4] = type;
 	// LBA size
 	store32le(&part[0x8], start);
-	store32le(&part[0xc], end - start + 1); // +1 to include the end sector number
+	store32le(&part[0xc], end - start); // do not include the end sector number
 
 	return;
 }
@@ -101,13 +117,16 @@ void Device::writePartitionTable(block_t firstBad, block_t lastBad, block_t size
 	block_t end = (lastBad + 1) / MBR_SECTOR_SIZE;
 	block_t num = size / MBR_SECTOR_SIZE;
 
+	if (start < MBR_FIRST_PART_START) start = MBR_FIRST_PART_START;
+	if (end < MBR_FIRST_PART_START) end = MBR_FIRST_PART_START;
+
 	unsigned int partNum = 0;
-	if (start > MBR_MIN_PART_SIZE) {
+	if (start > MBR_FIRST_PART_START+MBR_MIN_PART_SIZE) {
 		// There is enough space at the start of the device for a usable partition.
 		// This is skipped if the whole device is good (start == 0).
-		writeEntry(mbr, partNum++, 0, start, MBR_PTYPE_GOOD);
+		writeEntry(mbr, partNum++, MBR_FIRST_PART_START, start, MBR_PTYPE_GOOD);
 	}
-	if ((start != 0) && (end != 0)) {
+	if ((start != MBR_FIRST_PART_START) && (end != MBR_FIRST_PART_START)) {
 		// There is a bad section in the middle
 		writeEntry(mbr, partNum++, start, end, MBR_PTYPE_BAD);
 	}

@@ -74,11 +74,12 @@ class Device
 		/// Write out a partition table, screening off any bad areas.
 		/**
 		 * @param firstBad
-		 *   Offset, in bytes, of the first bad byte.
+		 *   Offset, in bytes, of the first bad byte.  Zero if no bad bytes.
 		 *
 		 * @param lastBad
 		 *   Offset, in bytes, of the last bad byte.  The byte following this one
-		 *   is good (assuming there is a byte following this one.)
+		 *   is good (assuming there is a byte following this one.)  Zero if no
+		 *   bad bytes.
 		 *
 		 * @param size
 		 *   Size of the device, in bytes.
