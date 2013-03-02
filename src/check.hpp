@@ -25,7 +25,7 @@
 #include "error.hpp"
 
 /// Size of each read and write operation.  Should match the underlying device.
-#define DATA_BLOCK_SIZE 4096
+#define DATA_BLOCK_SIZE 32768
 
 /// Abort when getting read errors continously for this many seconds
 #define MAX_READ_ERROR_TIME 15
