@@ -32,7 +32,6 @@
 #include <stdint.h>
 #include <errno.h>
 #include <time.h>
-//#include <stropts.h>
 #include <sys/ioctl.h>
 #include <linux/fs.h>
 
